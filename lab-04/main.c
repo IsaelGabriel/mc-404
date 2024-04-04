@@ -86,6 +86,30 @@ void hex_conversion(int* conv, char* str) {
     }
 }
 
+void to_bin_str(int n, char* buf) {
+    int neg = n < 0;
+    if(neg) n *= -1;
+    int bin_size = 0;
+
+    char str[32];
+
+    *buf = '0';
+    *(buf + 1) = 'b';
+
+    int i = 0;
+
+    while(i < 32 && n != 0) {
+        str[32-i] = (n % 2) + 48;
+        n = n >> 1;
+        i++;
+    }
+
+    for(int j = 0; j < i; j++) {
+        *(buf + 2 + i - j) = str[32-j];
+    }
+    *(buf + 2 + i + 1) = '\n'; 
+}
+
 int main()
 {
     char str[20];
@@ -98,6 +122,11 @@ int main()
     }else {
         decimal_conversion(&conv, str);
     }
+
+    char out[34];
+
+    to_bin_str(conv, out);
+    write(STDOUT_FD, out, 34); 
 
     /* Write n bytes from the str buffer to the standard output */
     write(STDOUT_FD, str, n);
