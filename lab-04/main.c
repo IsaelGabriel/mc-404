@@ -50,7 +50,7 @@ void _start()
 #define STDOUT_FD 1
 #define BUFFER_SIZE 20
 
-int pow(int a, int b) {
+int power(int a, int b) {
     int c = 1;
     for(int i = 0; i < b; i++) {
         c *= a;
@@ -63,7 +63,7 @@ void decimal_conversion(int* conv, char* str) {
     int i = BUFFER_SIZE - 1;
     while(i > 0) {
         if(*(str + i) >= 48 && *(str + i) <= 57) {
-            *conv += (*(str + i) - 48) * pow(10, p);
+            *conv += (*(str + i) - 48) * power(10, p);
             p++;
         }
         i--;
@@ -76,10 +76,10 @@ void hex_conversion(int* conv, char* str) {
     int i = BUFFER_SIZE - 1;
     while(i > 0) {
         if(*(str + i) >= 48 && *(str + i) <= 57) {
-            *conv += (*(str + i) - 48) * pow(16, p);
+            *conv += (*(str + i) - 48) * power(16, p);
             p++;
         }else if (*(str + i) >= 65 && *(str + i) <= 70){
-            *conv += (*(str + i) - 55) * pow(16, p);
+            *conv += (*(str + i) - 55) * power(16, p);
             p++;
         }
         i--;
