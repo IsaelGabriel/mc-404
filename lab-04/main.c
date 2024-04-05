@@ -161,6 +161,42 @@ void to_dec_str(int n, char* out) {
 
 }
 
+void to_unsigned_str(int n, char out[11]) {
+    unsigned int a = n;
+    unsigned int bytes[4];
+    unsigned int b = 0;
+
+    bytes[0] = (a & 0x000000FF) >> 0;
+    bytes[1] = (a & 0x0000FF00) >> 8;
+    bytes[2] = (a & 0x00FF0000) >> 16;
+    bytes[3] = (a & 0xFF000000) >> 24;
+
+    bytes[0] <<= 24;
+    bytes[1] <<= 16;
+    bytes[2] <<= 8;
+    bytes[3] <<= 0;
+
+    b = (bytes[0] | bytes[1] | bytes[2] | bytes[3]);
+
+
+    for(int i = 9; i >= 0; i--) {
+        out[i] = (b % 10) + 48;
+        b = (b - (b % 10)) / 10;
+    }
+
+    int end_n = 9;
+
+    if(out[0] == '0') {
+        while(out[0] == '0' && end_n > 0) {
+            for(int i = 0; i < end_n; i++) {
+                out[i] = out[i+1];
+            }
+            out[end_n] = 0;
+            end_n--;
+        }
+    }
+}
+
 int main()
 {
     char str[20];
@@ -177,15 +213,26 @@ int main()
 
     //scanf("%d", &conv);
 
-    /*char out_bin[35];
+    char out_bin[35];
 
     to_bin_str(conv, out_bin);
-    */
+    
     char out_dec[11];
+
+    printf("%s\n", out_bin);
+
 
     to_dec_str(conv, out_dec);
 
     printf("%s\n", out_dec);
+
+    char out_unsigned[11];
+    out_unsigned[10] = 0;
+
+    to_unsigned_str(conv, out_unsigned);
+
+    printf("%s\n", out_unsigned);
+
     //write(STDOUT_FD, out, 35); 
 
     /* Write n bytes from the str buffer to the standard output */
