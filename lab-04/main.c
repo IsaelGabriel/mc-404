@@ -247,11 +247,54 @@ void to_hex_str(int n, char* out) {
 
 }
 
+void to_octal_str(int n, char* out) {
+    for(int x = 0; x < 15; x++) {
+        out[x] = 0;
+    }
+    
+    int neg = n < 0;
+    unsigned int a;
+    if(neg) {
+        a = -n;
+        a = ~a + 1;
+    }else {
+        a = n;
+    }
+
+    out[0] = '0';
+    out[1] = 'o';
+
+    int i = 12;
+    while(i >= 2) {
+        char code = (a % 8) + 48;
+        if(code > 57) code += 39;
+        out[i] = code;
+
+        a = (a - (a % 8)) / 8;
+        i--;
+    }
+    
+    
+    int end_n = 12;
+    if(out[2] == '0') {
+        while(out[2] == '0' && end_n > 2) {
+            for(int j = 2; j < end_n; j++) {
+                out[j] = out[j+1];
+            }
+            out[end_n] = 0;
+            end_n--;
+        }
+    }
+
+    out[end_n + 1] = '\n';
+}
+
 void routine(int n) {
     char out_bin[36];
     char out_dec[13];
     char out_unsigned[11];
     char out_hex[11];
+    char out_octal[15];
 
     printf("From: %d\n", n);
 
@@ -269,7 +312,12 @@ void routine(int n) {
 
     to_hex_str(n, out_hex);
 
-    printf("%s\n\n", out_hex);
+    printf("%s\n", out_hex);
+
+    to_octal_str(n, out_octal);
+
+    printf("%s\n\n", out_octal);
+
 
     //printf("From: %d\n%s\n%s\n%s\n%s\n\n", n, out_bin, out_dec, out_unsigned, out_hex);
 
