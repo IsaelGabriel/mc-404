@@ -83,6 +83,9 @@ void hex_conversion(int* conv, char* str) {
         }else if (*(str + i) >= 65 && *(str + i) <= 70){
             *conv += (*(str + i) - 55) * power(16, p);
             p++;
+        }else if(*(str + i) >= 97 && *(str + i) <= 102) {
+            *conv += (*(str + i) - 87) * power(16, p);
+            p++;
         }
         i--;
     }
@@ -161,7 +164,7 @@ void to_dec_str(int n, char* out) {
 
 }
 
-void to_unsigned_str(int n, char out[11]) {
+void to_unsigned_str(int n, char* out) {
     unsigned int a = n;
     unsigned int bytes[4];
     unsigned int b = 0;
@@ -197,6 +200,75 @@ void to_unsigned_str(int n, char out[11]) {
     }
 }
 
+void to_hex_str(int n, char* out) {
+    int neg = n < 0;
+    unsigned int a;
+    if(neg) {
+        a = -n;
+        a = ~a + 1;
+    }else {
+        a = n;
+    }
+
+    out[0] = '0';
+    out[1] = 'x';
+
+    int i = 9;
+    while(i >= 2) {
+        char code = (a % 16) + 48;
+        if(code > 57) code += 39;
+        out[i] = code;
+
+        a = (a - (a % 16)) / 16;
+        i--;
+    }
+    
+    
+    int end_n = 9;
+    if(out[2] == '0') {
+        while(out[2] == '0' && end_n > 2) {
+            for(int j = 2; j < end_n; j++) {
+                out[j] = out[j+1];
+            }
+            out[end_n] = 0;
+            end_n--;
+        }
+    }
+
+
+}
+
+void routine(int n) {
+    char out_bin[36];
+    for(int i = 0; i < 36; i++) {
+        out_bin[i] = 0;
+    }
+    char out_dec[11];
+    char out_unsigned[11];
+    char out_hex[11];
+
+    printf("From: %d\n", n);
+
+    to_bin_str(n, out_bin);
+
+    printf("%s\n", out_bin);
+
+    /*to_dec_str(n, out_dec);
+
+    printf("%s\n", out_dec);*/
+
+    to_unsigned_str(n, out_unsigned);
+
+    printf("%s\n", out_unsigned);
+
+    to_hex_str(n, out_hex);
+
+    printf("%s\n\n", out_hex);
+
+    //printf("From: %d\n%s\n%s\n%s\n%s\n\n", n, out_bin, out_dec, out_unsigned, out_hex);
+
+}
+
 int main()
 {
     char str[20];
@@ -213,25 +285,10 @@ int main()
 
     //scanf("%d", &conv);
 
-    char out_bin[35];
-
-    to_bin_str(conv, out_bin);
-    
-    char out_dec[11];
-
-    printf("%s\n", out_bin);
-
-
-    to_dec_str(conv, out_dec);
-
-    printf("%s\n", out_dec);
-
-    char out_unsigned[11];
-    out_unsigned[10] = 0;
-
-    to_unsigned_str(conv, out_unsigned);
-
-    printf("%s\n", out_unsigned);
+    routine(545648);
+    routine(0x545648);
+    routine(-545648);
+    routine(0x80000000);
 
     //write(STDOUT_FD, out, 35); 
 
