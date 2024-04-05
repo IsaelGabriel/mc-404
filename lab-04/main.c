@@ -90,10 +90,18 @@ void hex_conversion(int* conv, char* str) {
 
 void to_bin_str(int n, char* buf) {
     int neg = n < 0;
-    if(neg) n *= -1;
-    int bin_size = 0;
+    unsigned int nn = n;
+    if(neg) {
+        nn = -n;
+        nn = ~nn + 1;
+    }else {
+        nn = n;
+    }
 
-    char str[32];
+    char str[33];
+    for(int i = 0; i < 33; i++) {
+        str[i] = 0;
+    }
 
     *buf = '0';
     *(buf + 1) = 'b';
@@ -101,24 +109,24 @@ void to_bin_str(int n, char* buf) {
     int k;
 
     for(int i = 31; i >= 0; i--) {
-        k = n >> i;
-        str[i] = 48;
-        if(k & 1) str[i]++;
+        k = nn >> i;
+        str[31 - i] = '0' + (k & 1);
     }
     
     int j = 0;
-    
-    while(*(str + j) == '0') {
-        j++;
+    if(str[0] == '0') {
+        while(str[j] == 48) {
+            j++;
+        }
     }
 
     if(j == 32) *(buf + 2) = '0';
     else {
-        for(int a = 0; a < j; a++) {
-            *(buf + 2 + a) = str[a];
+        for(int a = 0; a < 32 - j; a++) {
+            *(buf + 2 + a) = str[a + j];
         }
     }
-    //*(buf + 3 + j) = '\n';
+    *(buf + 3 + 32 - j) = '\n';
 }
 
 int main()
@@ -135,11 +143,12 @@ int main()
         decimal_conversion(&conv, str);
     }*/
 
-    scanf("%d", &conv);
+    //scanf("%d", &conv);
 
     char out[35];
 
-    to_bin_str(conv, out);
+    to_bin_str(-1, out);
+
     printf("%s\n", out);
     //write(STDOUT_FD, out, 35); 
 
