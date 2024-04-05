@@ -1,6 +1,4 @@
-#include <stdio.h>
-
-/*int read(int __fd, const void *__buf, int __n){
+int read(int __fd, const void *__buf, int __n){
     int ret_val;
   __asm__ __volatile__(
     "mv a0, %1           # file descriptor\n"
@@ -46,7 +44,7 @@ void _start()
 {
   int ret_code = main();
   exit(ret_code);
-}*/
+}
 
 #define STDIN_FD  0
 #define STDOUT_FD 1
@@ -293,30 +291,25 @@ void routine(int n) {
     char out_hex[11];
     char out_octal[15];
 
-    printf("From: %d\n", n);
-
     to_bin_str(n, out_bin);
 
-    printf("%s", out_bin);
+    write(STDOUT_FD, out_bin, 36);
 
     to_dec_str(n, out_dec);
 
-    printf("%s", out_dec);
+    write(STDOUT_FD, out_dec, 13);
 
     to_unsigned_str(n, out_unsigned);
 
-    printf("%s", out_unsigned);
+    write(STDOUT_FD, out_unsigned, 11);
 
     to_hex_str(n, out_hex);
 
-    printf("%s", out_hex);
+    write(STDOUT_FD, out_hex, 11);
 
     to_octal_str(n, out_octal);
 
-    printf("%s\n", out_octal);
-
-
-    //printf("From: %d\n%s\n%s\n%s\n%s\n\n", n, out_bin, out_dec, out_unsigned, out_hex);
+    write(STDOUT_FD, out_octal, 15);
 
 }
 
@@ -324,22 +317,17 @@ int main()
 {
     char str[20];
     /* Read up to 20 bytes from the standard input into the str buffer */
-    //int n = read(STDIN_FD, str, 20);
+    int n = read(STDIN_FD, str, 20);
     
-    int conv = -545648;
-    /*
+    int conv;
+    
     if(str[0] == '0' && str[1] == 'x') {
         hex_conversion(&conv, str);
     }else {
         decimal_conversion(&conv, str);
-    }*/
+    }
 
-    //scanf("%d", &conv);
-
-    routine(545648);
-    routine(0x545648);
-    routine(-545648);
-    routine(0x80000000);
+    routine(conv);
 
     //write(STDOUT_FD, out, 35); 
 
