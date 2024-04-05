@@ -92,6 +92,10 @@ void hex_conversion(int* conv, char* str) {
 }
 
 void to_bin_str(int n, char* buf) {
+    for(int i = 0; i < 36; i++) {
+        buf[i] = 0;
+    }
+
     int neg = n < 0;
     unsigned int nn = n;
     if(neg) {
@@ -130,20 +134,23 @@ void to_bin_str(int n, char* buf) {
         }
     }
     *(buf + 3 + 32 - j) = '\n';
+    for(int i = 4 + 32 - j; i < 36; i++) {
+        buf[i] = 0;
+    }
 }
 
 void to_dec_str(int n, char* out) {
     int pseudo_neg = (n >> 31) & 1;
     //int true_neg = n < 0;
-    int nn = 0;
+    unsigned int nn = 0;
     int start_n = 0; 
     if(pseudo_neg) {
         start_n = 1;
-        n = ~(n - 1);
+        nn = ~(n - 1);
         out[0] = '-';
+    }else {
+        nn = n;
     }
-    nn = n;
-
 
     for(int i = 10; i >= start_n; i--) {
         out[i] = (nn % 10) + 48;
@@ -161,6 +168,8 @@ void to_dec_str(int n, char* out) {
             end_n--;
         }
     }
+
+    out[12] = 0;
 
 }
 
@@ -240,10 +249,7 @@ void to_hex_str(int n, char* out) {
 
 void routine(int n) {
     char out_bin[36];
-    for(int i = 0; i < 36; i++) {
-        out_bin[i] = 0;
-    }
-    char out_dec[11];
+    char out_dec[13];
     char out_unsigned[11];
     char out_hex[11];
 
@@ -253,9 +259,9 @@ void routine(int n) {
 
     printf("%s\n", out_bin);
 
-    /*to_dec_str(n, out_dec);
+    to_dec_str(n, out_dec);
 
-    printf("%s\n", out_dec);*/
+    printf("%s\n", out_dec);
 
     to_unsigned_str(n, out_unsigned);
 
