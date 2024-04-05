@@ -129,13 +129,45 @@ void to_bin_str(int n, char* buf) {
     *(buf + 3 + 32 - j) = '\n';
 }
 
+void to_dec_str(int n, char* out) {
+    int pseudo_neg = (n >> 31) & 1;
+    //int true_neg = n < 0;
+    int nn = 0;
+    int start_n = 0; 
+    if(pseudo_neg) {
+        start_n = 1;
+        n = ~(n - 1);
+        out[0] = '-';
+    }
+    nn = n;
+
+
+    for(int i = 10; i >= start_n; i--) {
+        out[i] = (nn % 10) + 48;
+        nn = (nn - (nn % 10)) / 10;
+    }
+
+    int end_n = 10;
+    
+    if(out[start_n] == '0') {
+        while(out[start_n] == '0' && end_n > start_n) {
+            for(int i = start_n; i < end_n; i++) {
+                out[i] = out[i+1];
+            }
+            out[end_n] = 0;
+            end_n--;
+        }
+    }
+
+}
+
 int main()
 {
     char str[20];
     /* Read up to 20 bytes from the standard input into the str buffer */
     //int n = read(STDIN_FD, str, 20);
     
-    int conv = 0;
+    int conv = -545648;
     /*
     if(str[0] == '0' && str[1] == 'x') {
         hex_conversion(&conv, str);
@@ -145,11 +177,15 @@ int main()
 
     //scanf("%d", &conv);
 
-    char out[35];
+    /*char out_bin[35];
 
-    to_bin_str(-1, out);
+    to_bin_str(conv, out_bin);
+    */
+    char out_dec[11];
 
-    printf("%s\n", out);
+    to_dec_str(conv, out_dec);
+
+    printf("%s\n", out_dec);
     //write(STDOUT_FD, out, 35); 
 
     /* Write n bytes from the str buffer to the standard output */
