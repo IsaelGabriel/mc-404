@@ -1,4 +1,6 @@
-int read(int __fd, const void *__buf, int __n){
+#include <stdio.h>
+
+/*int read(int __fd, const void *__buf, int __n){
     int ret_val;
   __asm__ __volatile__(
     "mv a0, %1           # file descriptor\n"
@@ -44,7 +46,7 @@ void _start()
 {
   int ret_code = main();
   exit(ret_code);
-}
+}*/
 
 #define STDIN_FD  0
 #define STDOUT_FD 1
@@ -96,39 +98,52 @@ void to_bin_str(int n, char* buf) {
     *buf = '0';
     *(buf + 1) = 'b';
 
-    int i = 0;
+    int k;
 
-    while(i < 32 && n != 0) {
-        str[32-i] = (n % 2) + 48;
-        n = n >> 1;
-        i++;
+    for(int i = 31; i >= 0; i--) {
+        k = n >> i;
+        str[i] = 48;
+        if(k & 1) str[i]++;
+    }
+    
+    int j = 0;
+    
+    while(*(str + j) == '0') {
+        j++;
     }
 
-    for(int j = 0; j < i; j++) {
-        *(buf + 2 + i - j) = str[32-j];
+    if(j == 32) *(buf + 2) = '0';
+    else {
+        for(int a = 0; a < j; a++) {
+            *(buf + 2 + a) = str[a];
+        }
     }
-    *(buf + 2 + i + 1) = '\n'; 
+    //*(buf + 3 + j) = '\n';
 }
 
 int main()
 {
     char str[20];
     /* Read up to 20 bytes from the standard input into the str buffer */
-    int n = read(STDIN_FD, str, 20);
+    //int n = read(STDIN_FD, str, 20);
+    
     int conv = 0;
-
+    /*
     if(str[0] == '0' && str[1] == 'x') {
         hex_conversion(&conv, str);
     }else {
         decimal_conversion(&conv, str);
-    }
+    }*/
 
-    char out[34];
+    scanf("%d", &conv);
+
+    char out[35];
 
     to_bin_str(conv, out);
-    write(STDOUT_FD, out, 34); 
+    printf("%s\n", out);
+    //write(STDOUT_FD, out, 35); 
 
     /* Write n bytes from the str buffer to the standard output */
-    write(STDOUT_FD, str, n);
+    //write(STDOUT_FD, str, n);
     return 0;
 }
