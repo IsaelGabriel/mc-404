@@ -76,8 +76,8 @@ int power(int a, unsigned int b) {
 }
 
 void read_separate(int* int_array[5]) {
-  char str[20];
-  scanf("%20s", str);
+  char str[30];
+  scanf("%30s", str);
   
   for(int i = 0; i < 5; i++) {
     int is_positive = str[i*6] == '+';
