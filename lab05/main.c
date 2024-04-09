@@ -1,6 +1,4 @@
-#include <stdio.h>
-
-/*int read(int __fd, const void *__buf, int __n){
+int read(int __fd, const void *__buf, int __n){
     int ret_val;
   __asm__ __volatile__(
     "mv a0, %1           # file descriptor\n"
@@ -46,7 +44,7 @@ void _start()
 {
   int ret_code = main();
   exit(ret_code);
-}*/
+}
 
 #define STDIN_FD  0
 #define STDOUT_FD 1
@@ -67,8 +65,7 @@ void hex_code(int val){
             hex[i] = aux + '0';
         uval = uval / 16;
     }
-    printf("%s", hex);
-    //write(1, hex, 11);
+    write(1, hex, 11);
 }
 
 int power(int a, unsigned int b) {
@@ -77,9 +74,9 @@ int power(int a, unsigned int b) {
   return c;
 }
 
-void read_separate(int* int_array[5]) {
+void read_separate(int (*int_array)[5]) {
   char str[30];
-  scanf("%30s", str);
+  read(STDIN_FD, (void *) str, 30);
   
   for(int i = 0; i < 5; i++) {
     int is_positive = str[i*6] == '+';
