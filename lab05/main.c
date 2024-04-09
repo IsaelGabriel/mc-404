@@ -91,6 +91,8 @@ void read_separate(int* int_array[5]) {
 
 int main()
 {
-  /// TODO: Change all scanf and printf functions to read and write 
+  /// TODO: Change all scanf and printf functions to read and write
+  int int_array[5];
+  read_separate(&int_array);
   return 0;
 }
