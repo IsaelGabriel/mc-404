@@ -1,4 +1,6 @@
-int read(int __fd, const void *__buf, int __n){
+#include <stdio.h>
+
+/*int read(int __fd, const void *__buf, int __n){
     int ret_val;
   __asm__ __volatile__(
     "mv a0, %1           # file descriptor\n"
@@ -44,7 +46,7 @@ void _start()
 {
   int ret_code = main();
   exit(ret_code);
-}
+}*/
 
 #define STDIN_FD  0
 #define STDOUT_FD 1
@@ -94,5 +96,6 @@ int main()
   /// TODO: Change all scanf and printf functions to read and write
   int int_array[5];
   read_separate(&int_array);
+  int end_number = 0;
   return 0;
 }
