@@ -91,11 +91,18 @@ void read_separate(int* int_array[5]) {
   }
 }
 
+int reposition(int n, unsigned int quantity, unsigned int start) {
+  n <<= 32 - quantity;
+  n >>= 32 - quantity - start;
+  return n;
+}
+
 int main()
 {
   /// TODO: Change all scanf and printf functions to read and write
   int int_array[5];
   read_separate(&int_array);
-  int end_number = 0;
+  int end_number = reposition(int_array[0], 5, 0) | reposition(int_array[1], 7, 5) | reposition(int_array[2], 9, 12) | reposition(int_array[3], 4, 21) | reposition(int_array[4], 7, 25);
+  hex_code(end_number);
   return 0;
 }
