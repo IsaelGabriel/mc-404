@@ -82,17 +82,18 @@ void read_separate(int (*int_array)[5]) {
     int is_positive = str[i*6] == '+';
     (*int_array)[i] = 0;
     for(int j = 3; j >= 0; j--) {
-      (*int_array)[i] += (str[i*6 + 1 + j] - '0') * power(10, 3-j); 
+      (*int_array)[i] += (str[(i*6) + 1 + j] - '0') * power(10, 3-j); 
     }
     if(!is_positive) (*int_array)[i] *= -1;
   }
 }
 
 int reposition(int n, unsigned int quantity, unsigned int start) {
-  int mask = 0xFFFFFFFF;
+  unsigned int mask = ~0;
   mask <<= 32 - quantity;
-  mask >>= 32 - quantity - start;
-  n << start;
+  mask >>= 32 - quantity;
+  mask <<= start;
+  n <<= start;
   return n & mask;
 }
 
