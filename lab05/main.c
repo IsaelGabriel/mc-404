@@ -49,12 +49,29 @@ void _start()
 #define STDIN_FD  0
 #define STDOUT_FD 1
 
+void hex_code(int val){
+    char hex[11];
+    unsigned int uval = (unsigned int) val, aux;
+
+    hex[0] = '0';
+    hex[1] = 'x';
+    hex[10] = '\n';
+
+    for (int i = 9; i > 1; i--){
+        aux = uval % 16;
+        if (aux >= 10)
+            hex[i] = aux - 10 + 'A';
+        else
+            hex[i] = aux + '0';
+        uval = uval / 16;
+    }
+    printf("%s", hex);
+    //write(1, hex, 11);
+}
+
 int main()
 {
   char str[20];
-  /* Read up to 20 bytes from the standard input into the str buffer */
-  int n = read(STDIN_FD, str, 20);
-  /* Write n bytes from the str buffer to the standard output */
-  write(STDOUT_FD, str, n);
+  /// TODO: Change all scanf and printf functions to read and write 
   return 0;
 }
