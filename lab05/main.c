@@ -69,9 +69,28 @@ void hex_code(int val){
     //write(1, hex, 11);
 }
 
+int power(int a, unsigned int b) {
+  int c = 1;
+  for(int i = 0; i < b; i++) c *= a;
+  return c;
+}
+
+void read_separate(int* int_array[5]) {
+  char str[20];
+  scanf("%20s", str);
+  
+  for(int i = 0; i < 5; i++) {
+    int is_positive = str[i*6] == '+';
+    (*int_array)[i] = 0;
+    for(int j = 3; j >= 0; j--) {
+      (*int_array)[i] += (str[i*6 + 1 + j] - '0') * power(10, 3-j); 
+    }
+    if(is_positive) (*int_array)[i] *= -1;
+  }
+}
+
 int main()
 {
-  char str[20];
   /// TODO: Change all scanf and printf functions to read and write 
   return 0;
 }
