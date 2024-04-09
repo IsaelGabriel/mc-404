@@ -84,7 +84,7 @@ void read_separate(int (*int_array)[5]) {
     for(int j = 3; j >= 0; j--) {
       (*int_array)[i] += (str[i*6 + 1 + j] - '0') * power(10, 3-j); 
     }
-    if(is_positive) (*int_array)[i] *= -1;
+    if(!is_positive) (*int_array)[i] *= -1;
   }
 }
 
