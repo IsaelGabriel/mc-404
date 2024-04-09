@@ -89,9 +89,11 @@ void read_separate(int (*int_array)[5]) {
 }
 
 int reposition(int n, unsigned int quantity, unsigned int start) {
-  n <<= 32 - quantity;
-  n >>= 32 - quantity - start;
-  return n;
+  int mask = 0xFFFFFFFF;
+  mask <<= 32 - quantity;
+  mask >>= 32 - quantity - start;
+  n << start;
+  return n & mask;
 }
 
 int main()
