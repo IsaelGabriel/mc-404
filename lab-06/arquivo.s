@@ -1,15 +1,30 @@
 .globl _start
 
 _start:
-    jal main
+    j main
+
+end:
     li a0, 0
     li a7, 93 # exit
     ecall
 
 
 main:
+    li t0, 0
+
+to_str:
+    la a0, input_address # load input_address into a0
+    li a1, 0             # i = 0
+
+for_to_str:
+    li t0, 4
+    bge a1, t0, end_for_to_str # for(i = 0; i < size; i++)
+    addi a1, a1, 1
+    j for_to_str
+
+end_for_to_str:
     jal write
-    ret
+    j end
 
 read:
     li a0, 0             # file descriptor = 0 (stdin)
@@ -26,6 +41,8 @@ write:
     li a7, 64           # syscall write (64)
     ecall
     ret
+
+
 
 .bss
 
