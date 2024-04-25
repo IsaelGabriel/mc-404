@@ -63,7 +63,34 @@ to_int_array_for_j_end:
     j to_int_array_for_i
 
 to_int_array_for_i_end:
+# numbers.sqrt()
+    li a0, 0 # i = 0
 
+sqrt_for_i:
+    li t0, 4
+    bge a0, t0, to_string # for i in range(0, 4)
+    li a1, 0 # j = 0
+    li t0, 2 # t0 = 2
+    mul t0, a0, t0 # t0 = 2 * i
+    add a2, s2, t0 # a2 = numbers + i
+    lhu a3, 0(a2) # a3 = numbers[i] -> y
+    li t0, 2 # t0 = 2
+    divu a4, a3, t0 # a4 = a3 / 2 -> k
+
+sqrt_for_j:
+    li t0, 10
+    bge a1, t0, sqrt_for_j_end # for j in range(0, 10)
+    divu t0, a3, a4 # t0 = y / k
+    add t0, t0, a4 # t0 = k + (y / k)
+    li t1, 2 # t1 = 2
+    divu a4, t0, t1 # (k + (y / k)) / 2
+    addi a1, a1, 1 # j++
+    j sqrt_for_j
+
+sqrt_for_j_end:
+    sh a4, 0(a2) # numbers[i] = a4
+    addi a0, a0, 1 # i++
+    j sqrt_for_i
 
 # numbers.to_string()
 to_string:
