@@ -64,6 +64,8 @@ read:
 write:
     li a0, 1            # file descriptor = 1 (stdout)
     la a1, result       # buffer
+    li t0, '\n'
+    sb t0, 19(a1)
     li a2, 20           # size - Writes 20 bytes.
     li a7, 64           # syscall write (64)
     ecall
