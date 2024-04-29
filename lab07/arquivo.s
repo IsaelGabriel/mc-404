@@ -14,7 +14,7 @@ main:
 
 convert_first_line:
     la s0, input_address # s0 = input_address
-    la s1, coordinates # s1 = initial_coordinates
+    la s1, initial_coordinates # s1 = initial_coordinates
     li a0, 0 # i = 0
 
 for_i_convert:
@@ -33,7 +33,7 @@ for_i_convert:
     addi a1, a1, 1 # a1 += 1
 
 for_i_convert_not_negative:
-    sb a1, (s1) # initial_coordinates[i] = a1
+    sh a1, (s1) # initial_coordinates[i] = a1
     addi s0, s0, 6 # s0 += 6 
     addi s1, s1, 2 # s1 += 2
     addi a0, a0, 1 # i++
@@ -62,9 +62,9 @@ for_j_integer:
     j for_j_integer # loop
 
 end_j_integer:
-    lb t0, (a0)
-    addi t0, t0, -'0'
-    mul a4, t0, a4 # a4 = (start + i) * (10 ^ i)
+    lb t0, (a0) # t0 = *(start + i)
+    addi t0, t0, -'0' # t0 = *(start + i) - '0'
+    mul a4, t0, a4 # a4 = *(start + i) * (10 ^ i)
     add a1, a1, a4 # n += a4
     addi a0, a0, 1 # start += 1
     addi a2, a2, -1 # i--
