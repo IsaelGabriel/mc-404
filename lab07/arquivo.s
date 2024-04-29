@@ -65,9 +65,85 @@ for_i_convert_2:
 
 end_convert_2:
     jal calculate_distances
+
+set_y:
+    la t0, initial_coordinates # t0 = initial_coordinates
+    addi t0, t0, 2 # t0 = initial_coordinates + 2
+    lh a0, (t0) # a0 = B.y
+    la t0, distances # t0 = distances
+    lh a1, (t0) # a1 = d[A]
+    addi t0, t0, 2 # t0 = distances + 2
+    lh a2, (t0) # a2 = d[B]
+    mul a3, a1, a1 # y = d[A] ^ 2
+    mul t0, a0, a0 # t0 = B.y ^ 2
+    add a3, a3, t0 # y = (d[A]^2) + (B.y^2)
+    mul t0, a2, a2 # t0 = d[B] ^ 2
+    sub a3, a3, t0 # y = (d[A]^2) + (B.y^2) - (d[B]^2)
+    li t0, 2 # t0 = 2
+    mul t0, a0, t0 # t0 = B.y * 2
+    div a3, a3, t0 # y = ((d[A]^2) + (B.y^2) - (d[B]^2)) / (B.y * 2)
+    la t0, coordinates # t0 = coordinates
+    addi t0, t0, 2 # t0 = coordinates + 2
+    sh a3, (t0) # coordinates[1] = y 
+
+set_x:
+    mul a0, a1, a1 # a0 = d[A] ^ 2
+    mul t0, a3, a3 # t0 = y ^ 2
+    mv s0, t0 # s0 = t0
+    sub a0, a0, t0 # a0 = (d[A] ^ 2) - (y ^ 2)
+    jal sqrt # a0 = sqrt((d[A] ^ 2) - (y ^ 2))
+    mv a1, s0 # a1 = y ^ 2
+    la t0, coordinates # t0 = coordinates
+    lh a2, (t0) # a2 = C.x
+    mv a3, a0 # a3 = x'
+    mv s0, a3 # s0 = x'
+    li t0, -1 # t0 = -1
+    mul a4, a0, t0 # a4 = x"
+    mv s1, a4 # s1 = x"
+    sub a3, a3, a2 # a3 = x' - C.x
+    sub a4, a4, a2 # a4 = x" - C.x
+    mul a3, a3, a3 # a3 = (x' - C.x) ^ 2
+    mul a4, a4, a4 # a4 = (x" - C.x) ^ 2
+    add a3, a3, a1 # a3 = ((x' - C.x) ^ 2) + y
+    add a4, a4, a1 # a4 = ((x" - C.x) ^ 2) + y
+    la t0, distances # t0 = distances
+    addi t0, t0, 4 # t0 = distances + 4
+    lh t0, (t0) # t0 = d[C]
+    mul a5, t0, t0 # a5 = d[C] ^ 2
+    sub a3, a5, a3 # a3 = (d[C] ^ 2) - (((x' - C.x) ^ 2) + y)
+    sub a4, a5, a4 # a4 = (d[C] ^ 2) - (((x" - C.x) ^ 2) + y)
+    la a0, coordinates
+    blt a3, a4, second_x # if(a3 >= a4)
+    sh s0, (a0) # coordinates[0] = x'
+    j end_set_x # end_if
+
+second_x:
+    sh s1, (a0) # coordinates[1] = x"
+
+end_set_x:
     jal to_string
     jal write
     j end
+
+# int sqrt(a0:(int n)) -> a0
+sqrt:
+    li a1, 0 # i = 0
+    li t0, 2 # t0 = 2
+    div a2, a0, t0 # k = n / 2
+
+for_i_sqrt:
+    li t0, 21 # t0 = 21
+    bge a1, t0, end_sqrt # for i in range(0, 21)
+    div t0, a0, a2 # t0 = n / k
+    add a2, a2, t0  # k = k + (n / k)
+    li t0, 2
+    div a2, a2, t0 # k = (k + (n/k)) / 2 
+    addi a1, a1, 1 # i++
+    j for_i_sqrt # loop
+
+end_sqrt:
+    mv a0, a2 # a0 = k
+    ret
 
 # int convert_integer(a0:(char* start)) -> a0
 convert_integer:
@@ -117,16 +193,16 @@ for_i_distances:
     li t0, 3 # t0 = 3
     mul a2, a2, t0 # a2 = (T[R] - T[i]) * 3
     li t0, 10 # t0 = 10
-    remu t1, a2, t0 # t1 = ((T[R] - T[i]) * 3) % 10
-    sub a2, a2, t1 # a2 = ((T[R] - T[i]) * 3)  - (((T[R] - T[i]) * 3) % 10)
-    divu a2, a2, t0 # a2 = ((T[R] - T[i]) * 3)  - (((T[R] - T[i]) * 3) % 10) / 10
-    sh a2, (s1) # distances[i] = ((T[R] - T[i]) * 3)  - (((T[R] - T[i]) * 3) % 10) / 10
+    div a2, a2, t0 # a2 = ((T[R] - T[i]) * 3) / 10
+    sh a2, (s1) # distances[i] = ((T[R] - T[i]) * 3) / 10
     addi s1, s1, 2 # s1 += 2
     addi a0, a0, 1 # i++
     j for_i_distances # loop
 
 end_distances:
     ret
+
+
 
 # void to_string()
 to_string:
