@@ -37,9 +37,33 @@ for_i_convert_not_negative:
     addi s0, s0, 6 # s0 += 6 
     addi s1, s1, 2 # s1 += 2
     addi a0, a0, 1 # i++
-    j for_i_convert
+    j for_i_convert # loop
 
 end_convert:
+    jal read_second_line
+
+convert_second_line:
+    la t0, input_address # t0 = input_address
+    addi s0, t0, 12 # s0 = input_address + 12
+    la s1, timestamps # s1 = timestamps
+    li a0, 0 # i = 0
+
+for_i_convert_2:
+    li t0, 4 # t0 = 4
+    bge a0, t0, end_convert_2 # for i in range(0, 4)
+    mv s2, a0 # s2 = i
+    mv a0, s0 # a0 = s0
+    jal convert_integer # a0 = convert_integer(s0)
+    mv a1, a0 # a1 = convert_integer(s0)
+    mv a0, s2 # a0 = i
+    sh a1, (s1) # timestamps[i] = convert_integer(s0)
+    addi s0, s0, 5 # s0 += 5
+    addi s1, s1, 2 # s1 += 2
+    addi a0, a0, 1 # i++
+    j for_i_convert_2 # loop
+    
+
+end_convert_2:
     jal to_string
     jal write
     j end
