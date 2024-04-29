@@ -64,6 +64,7 @@ for_i_convert_2:
     
 
 end_convert_2:
+    jal calculate_distances
     jal to_string
     jal write
     j end
@@ -98,6 +99,34 @@ end_convert_integer:
     mv a0, a1 # a0 = n
     ret # return n
 
+# void calculate_distances()
+calculate_distances:
+    la s0, timestamps # s0 = timestamps
+    la s1, distances # s1 = distances
+    li a0, 0 # i = 0
+    lh a1, (s0) # a1 = T[R]
+
+for_i_distances:
+    li t0, 3 # t0 = 3
+    bge a0, t0, end_distances # for i in range(0, 3)
+    li t0, 2 # t0 = 2
+    mul t0, a0, t0 # t0 = 2 * i
+    add t0, s0, t0 # t0 = timestamps + (2 * i)
+    lh a2, (t0) # a2 = T[i]
+    sub a2, a1, a2 # a2 = T[R] - T[i]
+    li t0, 3 # t0 = 3
+    mul a2, a2, t0 # a2 = (T[R] - T[i]) * 3
+    li t0, 10 # t0 = 10
+    remu t1, a2, t0 # t1 = ((T[R] - T[i]) * 3) % 10
+    sub a2, a2, t1 # a2 = ((T[R] - T[i]) * 3)  - (((T[R] - T[i]) * 3) % 10)
+    divu a2, a2, t0 # a2 = ((T[R] - T[i]) * 3)  - (((T[R] - T[i]) * 3) % 10) / 10
+    sh a2, (s1) # distances[i] = ((T[R] - T[i]) * 3)  - (((T[R] - T[i]) * 3) % 10) / 10
+    addi s1, s1, 2 # s1 += 2
+    addi a0, a0, 1 # i++
+    j for_i_distances # loop
+
+end_distances:
+    ret
 
 # void to_string()
 to_string:
@@ -192,3 +221,5 @@ coordinates: .skip 0x04 # short coordinates[2]
 initial_coordinates: .skip 0x04 # short initial_coordinates[2]
 
 timestamps: .skip 0x08 # unsigned short timestamps[4]
+
+distances: .skip 0x06 # short distances[3]
