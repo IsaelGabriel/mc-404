@@ -18,7 +18,7 @@ main:
 
 convert_first_line:
     la s0, input_address # s0 = input_address
-    la s1, coordinates # s1 = initial_coordinates
+    la s1, initial_coordinates # s1 = initial_coordinates
     li a0, 0 # i = 0
 
 for_i_convert:
