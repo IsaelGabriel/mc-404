@@ -109,6 +109,8 @@ for_j_to_string:
     li t0, 10 # t0 = 10
     remu t0, a3, t0 # t0 = coordinates[i] % 10
     sub a3, a3, t0 # a3 -= coordinates[i] % 10
+    li t1, 10 # t1 = 10
+    divu a3, a3, t1 # a3 = (coordinates[i] - (coordinates[i] % 10)) / 10 
     add t1, a1, a4 # t1 = result + (i * 6) + j
     addi t0, t0, '0' # t0 += '0'
     sb t0, (t1) # result[(i * 6) + j] = t0
