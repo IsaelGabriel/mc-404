@@ -50,7 +50,7 @@ convert_second_line:
 
 for_i_convert_2:
     li t0, 4 # t0 = 4
-    bge a0, t0, end_convert_2 # for i in range(0, 4)
+    bge a0, t0, set_y # for i in range(0, 4)
     mv s2, a0 # s2 = i
     mv a0, s0 # a0 = s0
     jal convert_integer # a0 = convert_integer(s0)
@@ -61,66 +61,21 @@ for_i_convert_2:
     addi s1, s1, 2 # s1 += 2
     addi a0, a0, 1 # i++
     j for_i_convert_2 # loop
-    
-
-end_convert_2:
-    jal calculate_distances
 
 set_y:
-    la t0, initial_coordinates # t0 = initial_coordinates
-    addi t0, t0, 2 # t0 = initial_coordinates + 2
-    lh a0, (t0) # a0 = B.y
-    la t0, distances # t0 = distances
-    lh a1, (t0) # a1 = d[A]
-    addi t0, t0, 2 # t0 = distances + 2
-    lh a2, (t0) # a2 = d[B]
-    mul a3, a1, a1 # y = d[A] ^ 2
-    mul t0, a0, a0 # t0 = B.y ^ 2
-    add a3, a3, t0 # y = (d[A]^2) + (B.y^2)
-    mul t0, a2, a2 # t0 = d[B] ^ 2
-    sub a3, a3, t0 # y = (d[A]^2) + (B.y^2) - (d[B]^2)
-    li t0, 2 # t0 = 2
-    mul t0, a0, t0 # t0 = B.y * 2
-    div a3, a3, t0 # y = ((d[A]^2) + (B.y^2) - (d[B]^2)) / (B.y * 2)
+    li a0, 2 # a0 = 2
+    li a1, 1 # a1 = 1
+    jal get_coord # a0 = get_coord(2, 1) = get_coord(B, Y)
     la t0, coordinates # t0 = coordinates
-    addi t0, t0, 2 # t0 = coordinates + 2
-    sh a3, (t0) # coordinates[1] = y 
+    sh a0, 2(t0) # coordinates[Y] = get_coord(B, Y)
+
 
 set_x:
-    mul a0, a1, a1 # a0 = d[A] ^ 2
-    mul t0, a3, a3 # t0 = y ^ 2
-    mv s0, t0 # s0 = t0
-    sub a0, a0, t0 # a0 = (d[A] ^ 2) - (y ^ 2)
-    jal sqrt # a0 = sqrt((d[A] ^ 2) - (y ^ 2))
-    mv a1, s0 # a1 = y ^ 2
+    li a0, 3 # a0 = 3
+    li a1, 0 # a1 = 0
+    jal get_coord # a0 = get_coord(3, 0) = get_coord(C, Y)
     la t0, coordinates # t0 = coordinates
-    lh a2, (t0) # a2 = C.x
-    mv a3, a0 # a3 = x'
-    mv s0, a3 # s0 = x'
-    li t0, -1 # t0 = -1
-    mul a4, a0, t0 # a4 = x"
-    mv s1, a4 # s1 = x"
-    sub a3, a3, a2 # a3 = x' - C.x
-    sub a4, a4, a2 # a4 = x" - C.x
-    mul a3, a3, a3 # a3 = (x' - C.x) ^ 2
-    mul a4, a4, a4 # a4 = (x" - C.x) ^ 2
-    add a3, a3, a1 # a3 = ((x' - C.x) ^ 2) + y
-    add a4, a4, a1 # a4 = ((x" - C.x) ^ 2) + y
-    la t0, distances # t0 = distances
-    addi t0, t0, 4 # t0 = distances + 4
-    lh t0, (t0) # t0 = d[C]
-    mul a5, t0, t0 # a5 = d[C] ^ 2
-    sub a3, a5, a3 # a3 = (d[C] ^ 2) - (((x' - C.x) ^ 2) + y)
-    sub a4, a5, a4 # a4 = (d[C] ^ 2) - (((x" - C.x) ^ 2) + y)
-    la a0, coordinates
-    blt a3, a4, second_x # if(a3 >= a4)
-    sh s0, (a0) # coordinates[0] = x'
-    j end_set_x # end_if
-
-second_x:
-    sh s1, (a0) # coordinates[1] = x"
-
-end_set_x:
+    sh a0, (t0) # coordinates[X] = get_coord(C, X)
     jal to_string
     jal write
     j end
@@ -175,34 +130,45 @@ end_convert_integer:
     mv a0, a1 # a0 = n
     ret # return n
 
-# void calculate_distances()
-calculate_distances:
-    la s0, timestamps # s0 = timestamps
-    la s1, distances # s1 = distances
-    li a0, 0 # i = 0
-    lh a1, (s0) # a1 = T[R]
-
-for_i_distances:
+# int get_coord(a0:(unsigned byte timestamp_index), a1:(unsigned byte coord_index)) -> a0
+get_coord:
+    # set time_diff[i]
+    la t0, timestamps # t0 = timestamps
+    lh a3, (t0) # a3 = timestamps[0]
+    li t1, 2 # t1 = 2
+    mul t1, a0, t1 # t1 = timestamp_index * 2
+    add t1, t0, t1 # t1 = timestamps + (timestamp_index * 2)
+    lh t1, (t1) # t1 = timestamps[timestamp_index]
+    sub a2, a3, t1 # a2 = time_diff[i] = timestamps[0] - timestamps[timestamp_index]
+    # set time_diff[A]
+    li t1, 2 # t1 = 2
+    add t1, t0, t1 # t1 = timestamps + 2
+    lh t1, (t1) # t1 = timestamps[A]
+    sub a3, a3, t1 # a3 = time_diff[A] = timestamps[0] - timestamps[A]
+    # set d[i] and d[A]
     li t0, 3 # t0 = 3
-    bge a0, t0, end_distances # for i in range(0, 3)
-    li t0, 2 # t0 = 2
-    mul t0, a0, t0 # t0 = 2 * i
-    add t0, s0, t0 # t0 = timestamps + (2 * i)
-    lh a2, (t0) # a2 = T[i]
-    sub a2, a1, a2 # a2 = T[R] - T[i]
-    li t0, 3 # t0 = 3
-    mul a2, a2, t0 # a2 = (T[R] - T[i]) * 3
-    li t0, 10 # t0 = 10
-    div a2, a2, t0 # a2 = ((T[R] - T[i]) * 3) / 10
-    sh a2, (s1) # distances[i] = ((T[R] - T[i]) * 3) / 10
-    addi s1, s1, 2 # s1 += 2
-    addi a0, a0, 1 # i++
-    j for_i_distances # loop
-
-end_distances:
+    li t1, 10 # t1 = 10
+    mul a2, a2, t0 # a2 *= 3
+    div a2, a2, t1 # a2 = d[i]
+    mul a3, a3, t0 # a3 *= 3
+    div a3, a3, t1 # a3 = d[A]
+    # set (d[i] ^ 2) and (d[i] ^ 2)
+    mul a2, a2, a2 # a2 = d[i] ^ 2
+    mul a3, a3, a3 # a3 = d[A] ^ 2
+    # set initial_coord
+    la t0, initial_coordinates # t0 = initial_coordinates
+    li t1, 2 # t1 = 2
+    mul t1, a1, t1 # t1 = coord_index * 2
+    add t0, t0, t1 # t0 = initial_coordinates + (coord_index * 2)
+    lh a1, (t0) # a1 = initial_coord = initial_coordinates[coord_index]
+    # use formula
+    li a0, 0 # a0 = 0
+    mul t0, a1, a1 # t0 = initial_coord ^ 2
+    add a0, a3, t0 # a0 = (d[A] ^ 2) + (initial_coord ^ 2)
+    sub a0, a0, a2 # a0 = (d[A] ^ 2) + (initial_coord ^ 2) - (d[i] ^ 2)
+    srai a0, a0, 1 # a0 /= 2
+    div a0, a0, a1 # a0 = n
     ret
-
-
 
 # void to_string()
 to_string:
