@@ -221,9 +221,12 @@ end_for_j_to_string:
     j for_i_to_string # loop
 
 end_to_string:
-    addi a0, s1, 0xB # a0 = result + 0xB
-    li t0, '\n'
-    sb t0, (a0)
+    la t0, result
+    addi a0, t0, 0xB # a0 = result + 0xB
+    li t1, '\n'
+    sb t1, (a0)
+    li t1, 0
+    sw t1, 1(a0)
     ret
 
 read_first_line:
