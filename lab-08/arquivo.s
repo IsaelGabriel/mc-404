@@ -16,11 +16,21 @@ set_pixel:            # void set_pixel(a0: uint x, a1: uint y, a2: byte color)
     add a2, a2, t0    # a2 = [color, color, color]
     slli a2, a2, 8    # a2 = [color, color, color, 0x0]
     addi a2, a2, 0xFF # a2 = [color, color, color, 0xFF]
-    li a7, 2200       # setPixel
+    li a7, 2200       # syscall setPixel
     ecall
+    ret
 
 set_canvas_size: # void set_canvas_size(a0: uint width, a1: uint height)
-    li a7, 2201  # setCanvasSize
+    li a7, 2201  # syscall setCanvasSize
+    ret
+
+open:                    # fd open()
+    la a0, input_file    # address for the file path
+    li a1, 0             # flags (0: rdonly, 1: wronly, 2: rdwr)
+    li a2, 0             # mode
+    li a7, 1024          # syscall open 
+    ecall
+    ret
 
 .bss
 
