@@ -16,6 +16,32 @@ main:
     addi sp, sp, 4  # free 4 bytes
     ret
 
+read_ascii:                         # int read_ascii()
+    addi sp, sp, -5                 # alloc 5 bytes
+    sw ra, 0(sp)                    # sp[0] = ra
+    li a0, 0                        # n = 0
+
+    while_read_ascii:
+        sb a0, 4(sp)                # sp[1] = n
+        jal read                    # call read()
+        la t0, current_char         # t0 = &current_char
+        lb a0, 4(sp)                # a0 = n
+        lb a1, 0(t0)                # a1 = current_char
+        addi a1, a1, -'0'           # a1 -= '0'
+        li t0, 9                    # t0 = 9
+        bgtu a1, t0, end_read_ascii # if current_char > 9: end loop
+        li t0, 10                   # t0 = 10
+        mul a0, a0, t0              # n *= 10
+        add a0, a0, a1              # n += current_char
+        j while_read_ascii          # loop
+
+
+    end_read_ascii:
+        lw ra, 0(sp)                # ra = sp[0]
+        addi sp, sp, 5              # free 5 bytes
+        ret                         # return n
+
+
 set_pixel:            # void set_pixel(a0: uint x, a1: uint y, a2: byte color)
     slli t0, a2, 8    # t0 = color << 8
     add a2, a2, t0    # a2 = color + (color << 8)
