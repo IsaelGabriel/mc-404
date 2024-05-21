@@ -31,6 +31,23 @@ set_canvas_size: # void set_canvas_size(a0: uint width, a1: uint height)
     li a7, 2201  # syscall setCanvasSize
     ret
 
+skip_chars:                         # void skip_chars(a0: n)
+    addi sp, sp, -8                 # alloc 8 bytes [4 for ra, 4 for a0]
+    sw ra, 0(sp)                    # sp[0] = ra
+    li a1, 0                        # i = 0
+    for_i_skip_chars:
+        bge a1, a0, end_skip_chars  # for(int i = 0; i < n; i++)
+        sw a0, 4(sp)                # sp[1] = n
+        jal read                    # read()
+        lw a0, 4(sp)                # a0 = n
+        addi a1, a1, 1              # i++
+        j for_i_skip_chars
+    
+    end_skip_chars:
+        lw ra, 0(sp)                # ra = sp[0]
+        addi sp, sp, 8              # free 8 bytes
+        ret
+
 read:                   # void read()
     la a0, fd           # a0 = fd
     lw a0, 0(a0)        # a0 = *fd
