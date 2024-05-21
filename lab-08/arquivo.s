@@ -26,9 +26,46 @@ main:
     jal read            # skip 1 char
     jal read_ascii      # skip next number
     jal read            # skip 1 char
+    jal draw_image      # call draw_image()
     lw ra, 0(sp)        # retrieve return address
     addi sp, sp, 4      # free 4 bytes
     ret
+
+draw_image:                                     # void draw_image()
+    addi sp, sp, -8                             # alloc 8 bytes
+    sw ra, 0(sp)                                # store ra
+    li a1, 0                                    # y = 0
+    for_y_in_draw_image:
+        la t0, size                             # t0 = &size
+        lh t0, 2(t0)                            # t0 = height
+        bge a1, t0, end_draw_image              # if y >= height: end y loop
+        li a0, 0                                # x = 0
+        for_x_in_draw_image:
+            la t0, size                         # t0 = &size
+            lh t0, 0(t0)                        # t0 = width
+            bge a0, t0, end_for_x_in_draw_image # if x >= width: end x loop
+            sh a0, 4(sp)                        # store x
+            sh a1, 6(sp)                        # store y
+            jal read                            # read
+            lh a0, 4(sp)                        # retrieve x
+            lh a1, 6(sp)                        # retrieve y
+            la t0, current_char                 # t0 = &current_char
+            lb a2, 0(t0)                        # a2 = current_char
+            addi a2, a2, -'0'                   # a2 -= '0'
+            jal set_pixel                       # call set_pixel(x, y, current_char)
+            jal read                            # skip 1 char
+            lh a0, 4(sp)                        # retrieve x
+            lh a1, 6(sp)                        # retrieve y
+            addi a0, a0, 1                      # x++
+            j for_x_in_draw_image               # x loop
+        end_for_x_in_draw_image:
+            addi a1, a1, 1                      # y++
+            j for_y_in_draw_image               # y loop
+
+    end_draw_image:
+        lw ra, 0(sp)                            # retrieve ra
+        addi sp, sp, 8                          # free 8 bytes
+        ret
 
 read_ascii:                         # int read_ascii()
     addi sp, sp, -5                 # alloc 5 bytes
