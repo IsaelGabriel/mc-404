@@ -7,13 +7,27 @@ _start:
     ecall
 
 main:
-    addi sp, sp, -4 # alloc 4 bytes
-    sw ra, 0(sp)    # store return address
-    jal open        # call open()
-    la a1, fd       # a1 = fd
-    sw a0, 0(a1)    # *fd = open()
-    lw ra, 0(sp)    # retrieve return address
-    addi sp, sp, 4  # free 4 bytes
+    addi sp, sp, -4     # alloc 4 bytes
+    sw ra, 0(sp)        # store return address
+    jal open            # call open()
+    la a1, fd           # a1 = fd
+    sw a0, 0(a1)        # *fd = open()
+    li a0, 3            # a0 = 0
+    jal skip_chars      # skip first 3 chars
+    jal read_ascii      # a0 = read_ascii()
+    la s0, size         # s0 = size
+    sh a0, 0(s0)        # size[0] = a0
+    jal read            # skip 1 char
+    jal read_ascii      # a0 = read_ascii()
+    sh a0, 2(s0)        # size[1] = a0
+    mv a1, a0           # a1 = height
+    lh a0, 0(s0)        # a0 = width
+    jal set_canvas_size # set_canvas_size(a0, a1)
+    jal read            # skip 1 char
+    jal read_ascii      # skip next number
+    jal read            # skip 1 char
+    lw ra, 0(sp)        # retrieve return address
+    addi sp, sp, 4      # free 4 bytes
     ret
 
 read_ascii:                         # int read_ascii()
@@ -98,3 +112,5 @@ input_file: .asciiz "image.pgm"
 fd: .skip 0x04 # file descriptor
 
 current_char: .skip 0x01 # current read char from file
+
+size: .skip 0x04 # short size[2]
