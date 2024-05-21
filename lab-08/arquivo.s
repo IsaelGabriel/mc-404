@@ -7,6 +7,13 @@ _start:
     ecall
 
 main:
+    addi sp, sp, -4 # alloc 4 bytes
+    sw ra, 0(sp)    # store return address
+    jal open        # call open()
+    la a1, fd       # a1 = fd
+    sw a0, 0(a1)    # *fd = open()
+    lw ra, 0(sp)    # retrieve return address
+    addi sp, sp, 4  # free 4 bytes
     ret
 
 set_pixel:            # void set_pixel(a0: uint x, a1: uint y, a2: byte color)
@@ -35,3 +42,5 @@ open:                    # fd open()
 .bss
 
 input_file: .asciiz "image.pgm"
+
+fd: .skip 0x04 # file descriptor
