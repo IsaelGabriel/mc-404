@@ -68,15 +68,15 @@ draw_image:                                     # void draw_image()
         ret
 
 read_ascii:                         # int read_ascii()
-    addi sp, sp, -5                 # alloc 5 bytes
+    addi sp, sp, -8                 # alloc 8 bytes
     sw ra, 0(sp)                    # sp[0] = ra
     li a0, 0                        # n = 0
 
     while_read_ascii:
-        sb a0, 4(sp)                # sp[1] = n
+        sw a0, 4(sp)                # sp[1] = n
         jal read                    # call read()
         la t0, current_char         # t0 = &current_char
-        lb a0, 4(sp)                # a0 = n
+        lw a0, 4(sp)                # a0 = n
         lb a1, 0(t0)                # a1 = current_char
         addi a1, a1, -'0'           # a1 -= '0'
         li t0, 9                    # t0 = 9
@@ -89,7 +89,7 @@ read_ascii:                         # int read_ascii()
 
     end_read_ascii:
         lw ra, 0(sp)                # ra = sp[0]
-        addi sp, sp, 5              # free 5 bytes
+        addi sp, sp, 8              # free 8 bytes
         ret                         # return n
 
 
