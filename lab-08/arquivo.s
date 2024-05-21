@@ -105,9 +105,11 @@ open:                    # fd open()
     ecall
     ret
 
-.bss
+.data
 
-input_file: .asciiz "image.pgm"
+input_file: .asciz "image.pgm"
+
+.bss
 
 fd: .skip 0x04 # file descriptor
 
