@@ -31,6 +31,15 @@ set_canvas_size: # void set_canvas_size(a0: uint width, a1: uint height)
     li a7, 2201  # syscall setCanvasSize
     ret
 
+read:                   # void read()
+    la a0, fd           # a0 = fd
+    lw a0, 0(a0)        # a0 = *fd
+    la a1, current_char # a1 = current_char
+    li a2, 1            # size = 1
+    li a7, 63           # syscall read
+    ecall
+    ret
+
 open:                    # fd open()
     la a0, input_file    # address for the file path
     li a1, 0             # flags (0: rdonly, 1: wronly, 2: rdwr)
@@ -44,3 +53,5 @@ open:                    # fd open()
 input_file: .asciiz "image.pgm"
 
 fd: .skip 0x04 # file descriptor
+
+current_char: .skip 0x01 # current read char from file
