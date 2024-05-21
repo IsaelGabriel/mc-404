@@ -12,8 +12,9 @@ main:
     jal open            # call open()
     la a1, fd           # a1 = fd
     sw a0, 0(a1)        # *fd = open()
-    li a0, 3            # a0 = 3
-    jal skip_chars      # skip first 3 chars
+    jal read
+    jal read
+    jal read
     jal read_ascii      # a0 = read_ascii()
     la s0, size         # s0 = size
     sh a0, 0(s0)        # size[0] = a0
@@ -46,8 +47,8 @@ draw_image:                                     # void draw_image()
             lh a1, 6(sp)                        # retrieve y
             la t0, current_char                 # t0 = &current_char
             lb a2, 0(t0)                        # a2 = current_char
-            addi a2, a2, -'0'                   # a2 -= '0'
             jal set_pixel                       # call set_pixel(x, y, current_char)
+            jal read
             lh a0, 4(sp)                        # retrieve x
             lh a1, 6(sp)                        # retrieve y
             addi a0, a0, 1                      # x++
@@ -62,28 +63,26 @@ draw_image:                                     # void draw_image()
         ret
 
 read_ascii:                         # int read_ascii()
-    addi sp, sp, -8                 # alloc 8 bytes
-    sw ra, 0(sp)                    # sp[0] = ra
-    li a0, 0                        # n = 0
-
+    addi sp, sp, -8 # alloc 8 bytes
+    sw ra, 0(sp)    # store ra
+    li a0, 0 # n = 0
     while_read_ascii:
-        sw a0, 4(sp)                # sp[1] = n
-        jal read                    # call read()
-        lw a0, 4(sp)                # a0 = n
-        la t0, current_char         # t0 = &current_char
-        lb a1, 0(t0)                # a1 = current_char
-        addi a1, a1, -'0'           # a1 -= '0'
-        li t0, 10                   # t0 = 10
-        bgeu a1, t0, end_read_ascii # if current_char >= 10: end loop
-        mul a0, a0, t0              # n *= 10
-        add a0, a0, a1              # n += current_char
-        j while_read_ascii          # loop
-
-
+        sw a0, 4(sp) # store n
+        jal read # call read
+        la t0, current_char # t0 =  &current_char
+        lb a1, 0(t0) # a1 = current_char
+        addi a1, a1, -'0' # current_char -= '0'
+        li t0, 10 # t0 = 10
+        bgeu a1, t0, end_read_ascii # if current_char > 10: end loop
+        lw a0, 4(sp) # retrieve n
+        mul a0, a0, t0 # n *= 10
+        add a0, a0, a1 # n += current_char
+        j while_read_ascii # loop
     end_read_ascii:
-        lw ra, 0(sp)                # ra = sp[0]
-        addi sp, sp, 8              # free 8 bytes
-        ret                         # return n
+        lw a0, 4(sp) # retrieve n
+        lw ra, 0(sp)    # retrieve ra
+        addi sp, sp, 8 # free 8 bytes
+        ret # return n
 
 
 set_pixel:            # void set_pixel(a0: uint x, a1: uint y, a2: byte color)
@@ -103,23 +102,6 @@ set_canvas_size: # void set_canvas_size(a0: uint width, a1: uint height)
     li a7, 2201  # syscall setCanvasSize
     ecall
     ret
-
-skip_chars:                         # void skip_chars(a0: n)
-    addi sp, sp, -8                 # alloc 8 bytes [4 for ra, 4 for a0]
-    sw ra, 0(sp)                    # sp[0] = ra
-    li a1, 0                        # i = 0
-    for_i_skip_chars:
-        bge a1, a0, end_skip_chars  # for(int i = 0; i < n; i++)
-        sw a0, 4(sp)                # sp[1] = n
-        jal read                    # read()
-        lw a0, 4(sp)                # a0 = n
-        addi a1, a1, 1              # i++
-        j for_i_skip_chars
-    
-    end_skip_chars:
-        lw ra, 0(sp)                # ra = sp[0]
-        addi sp, sp, 8              # free 8 bytes
-        ret
 
 read:                   # void read()
     la a0, fd           # a0 = fd
