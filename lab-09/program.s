@@ -91,6 +91,7 @@ to_string: # void to_string(int n) -> set output to string of length 2
     sb t0, 0(a1) # output[0] = '-'
     li t0, -1 # t0 = -1
     mul a0, a0, t0 # n *= -1
+    addi a1, a1, 1 # str = *output + 1
 
     to_string_end:
     addi a0, a0, '0' # a0 = str(n)
