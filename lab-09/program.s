@@ -17,7 +17,7 @@ main:
     sw ra, 12(sp) # store ra
 
     jal ra, read_decimal # int n = read_decimal()
-    jal ra, compare_nodes # int icompare_nodes(n)
+    jal ra, compare_nodes # int i = compare_nodes(n)
     jal ra, to_string # to_string(i)
     jal ra, write # write()
 
@@ -85,17 +85,38 @@ compare_nodes: # int compare_nodes(int n) -> retuns index of LinkedList node tha
         ret # return -1
 
 to_string: # void to_string(int n) -> set output to string of length 2
-    la a1, output # char* str = *output
-    bge a0, zero ,to_string_end # if(n >= 0) continue;
-    li t0, '-' # t0 = '-'
-    sb t0, 0(a1) # output[0] = '-'
-    li t0, -1 # t0 = -1
-    mul a0, a0, t0 # n *= -1
-    addi a1, a1, 1 # str = *output + 1
+    la a1, output                       # char* str = *output
+    blt a0, zero, to_string_minus_one   # if(n < 0) -> to_string_minus_one;
+    li t0, 10                           # t0 = 10
+    rem t1, a0, t0                      # t1 = n % 10
+    sub a0, a0, t1                      # n -= n % 10
+    div a0, a0, t0                      # n /= 10
+    addi t1, t1, '0'                    # t0 = char(n % 10)
+    sb t1, 2(a1)                        # output[2] = char(n % 10)
+    addi a1, a1, 1                      # str = *output + 1
+    li a2, 1                            # int i = 1
+    
+    to_string_loop:
+        beq a0, zero, to_string_loop_end    # if(n == 0) end loop
+        blt a2, zero, to_string_loop_end    # if(i < 0) end loop
+        li t0, 10                           # t0 = 10
+        rem t1, a0, t0                      # t1 = n % 10
+        sub a0, a0, t1                      # n -= n % 10
+        div a0, a0, t0                      # n /= 10
+        addi t1, t1, '0'                    # t0 = char(n % 10)
+        sb t1, 0(a1)                        # output[i] = char(n % 10)
+        addi a1, a1, -1                     # str--
+        addi a2, a2, -1                     # i--
+        j to_string_loop                    # loop
 
-    to_string_end:
-    addi a0, a0, '0' # a0 = str(n)
-    sb a0, 0(a1) # output[i] = abs(n)
+    to_string_loop_end:
+        ret
+
+    to_string_minus_one:
+    li t0, '-'              # t0 = '-'
+    sb t0, 0(a1)            # str[0] = '-'
+    li t0, '1'              # t0 = '1'
+    sb t0, 1(a1)            # str[1] = '1'
     ret
 
 read:
@@ -110,8 +131,8 @@ write:
     li a0, 1            # file descriptor = 1 (stdout)
     la a1, output       # buffer
     li t0, '\n'
-    sb t0, 2(a1)        # append '\n' to end of string
-    li a2, 0x03         # size - Writes 3 bytes.
+    sb t0, 3(a1)        # append '\n' to end of string
+    li a2, 0x04         # size - Writes 4 bytes.
     li a7, 64           # syscall write (64)
     ecall
     ret
@@ -120,4 +141,4 @@ write:
 .bss
 
 input_address: .skip 0x7
-output: .skip 0x03
+output: .skip 0x04
