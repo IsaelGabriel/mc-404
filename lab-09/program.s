@@ -15,6 +15,10 @@ _start:
 main:
     addi sp, sp, -16
     sw ra, 12(sp) # store ra
+    la a0, output
+    li t0, 0
+    sw t0, 0(a0)
+
 
     jal ra, read_decimal # int n = read_decimal()
     jal ra, compare_nodes # int i = compare_nodes(n)
@@ -42,7 +46,7 @@ read_decimal: # int read_decimal() -> reads input as decimal d in -10000 <= d <=
 
         read_decimal_loop:
             li t0, '0'                      # char t0 = '0'
-            ble a2, t0, read_decimal_end    # if a2 <= '0' -> string has ended
+            blt a2, t0, read_decimal_end    # if a2 < '0' -> string has ended
             li t1, 10                       # int t1 = 10
             mul a0, a0, t1                  # n *= 10
             sub a2, a2, t0                  # input[i] -> int(input[i])
@@ -61,18 +65,18 @@ read_decimal: # int read_decimal() -> reads input as decimal d in -10000 <= d <=
 
 compare_nodes: # int compare_nodes(int n) -> retuns index of LinkedList node that contains values that sum up to n
     li a1, 0  # int i = 0
-    la a3, head_node # Node* node = head_node
+    la a2, head_node # Node* node = head_node
 
         compare_nodes_loop:
-            lw a4, 12(a3) # Node* next_node = node->next
-            lw t0, 0(a3) # int sum = node->val1
-            lw t1, 4(a3) # t1 = node->val2
+            lw t0, 0(a2) # int sum = node->val1
+            lw t1, 4(a2) # t1 = node->val2
             add t0, t0, t1 # sum = node->val1 + node->val2
-            lw t1, 8(a3) # t1 = node->val3
+            lw t1, 8(a2) # t1 = node->val3
             add t0, t0, t1 # sum = node->val1 + node->val2 + node->val3
             beq t0, a0, compare_nodes_value_found # if(sum == n) -> value found
-            mv a3, a4 # node = next_node
-            beq a4, zero, compare_nodes_value_not_found # end if next_node == null
+            lw a3, 12(a2) # Node* next_node = node->next
+            beq a3, zero, compare_nodes_value_not_found # end if next_node == null
+            mv a2, a3 # node = next_node
             addi a1, a1, 1 # i++
             j compare_nodes_loop
 
@@ -140,5 +144,5 @@ write:
 
 .bss
 
-input_address: .skip 0x7
+input_address: .skip 0x07
 output: .skip 0x04
