@@ -101,7 +101,6 @@ itoa:                           # char *itoa ( int value, char *str, int base )
         mv s0, a1               # str_start += 1
 
     itoa_0:
-        beq a0, zero, itoa_1    # if value == 0 -> itoa_1
         addi a3, a3, 1          # digits++
         rem t0, a0, a2          # t0 = value % base
         sub a0, a0, t0          # value -= value % base
@@ -109,6 +108,7 @@ itoa:                           # char *itoa ( int value, char *str, int base )
         addi t0, t0, '0'        # t0 = (value % base) + '0'
         sb t0, 0(a1)            # str[i] = (value % base) + '0'
         addi a1, a1, 1          # a1 += 1
+        beq a0, zero, itoa_1    # if value == 0 -> itoa_1
         j itoa_0
 
     itoa_1:                     # invert str
