@@ -55,8 +55,32 @@ gets: # char *gets ( char *str )
         addi sp, sp, 16         # free 16
         ret                     # return str
 
-atoi: # int atoi (const char *str)
-    ret
+atoi:                           # int atoi (const char *str)    
+    mv a1, a0                   # a1 -> str
+    li a0, 0                    # number = 0
+    li a2, 1                    # signal = 1
+    li a3, '0'                  # a3 = '0'
+    li a4, 10                   # a4 = 10
+    li t0, '-'                  # t0 = '-'
+    lb t1, 0(a1)                # t1 = str[0]
+    bne t1, t0, atoi_0          # if str[0] != '-' -> atoi_0
+
+    atoi_case_negative:
+        addi a1, a1, 1          # str++
+        li a2, -1               # signal = -1
+
+    atoi_0:
+        lb t0, 0(a1)            # t0 = str[i]
+        beq t0, zero, atoi_end  # if str[i] == '\0' -> atoi_end
+        mul a0, a0, a4          # number *= 10
+        sub t0, t0, a3          # t0 = int(str[i])
+        add a0, a0, t0          # number += int(str[i])
+        addi a1, a1, 1          # str++
+        j atoi_0                # loop
+
+    atoi_end:
+        mul a0, a0, a2          # number *= signal
+        ret                     # return number
 
 itoa:                           # char *itoa ( int value, char *str, int base )
     addi sp, sp, -16
