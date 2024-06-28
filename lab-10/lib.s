@@ -7,8 +7,39 @@
 
 .text
 
-recursive_tree_search: # int recursive_tree_search(Node *root_node, int val)
-    ret
+recursive_tree_search:                  # int recursive_tree_search(Node *root_node, int val)
+    li a2, 0                            # depth = 0
+
+    search:                             # int search(Node * node, int val, int depth)
+        addi sp, sp, -16
+        addi a2, a2, 1                  # depth++
+        sw ra, 12(sp)                   # store ra
+        sw a0, 8(sp)                    # store node
+        sw a2, 4(sp)                    # store depth
+        lw t0, 0(a0)                    # t0 = node->val
+        beq t0, a1, search_found        # if node->val == val -> search_end
+
+        search_left:
+            lw a0, 4(a0)                # a0 = node->left
+            beq a0, zero, search_right  # if node->left == NULL -> search_right
+            jal ra, search              # left_depth = search(node->left, val, depth)
+            bne a0, zero, search_end    # if left_depth != 0 -> search_end
+
+        search_right:
+            lw a0, 8(sp)                # load node
+            lw a0, 8(a0)                # a0 = node->right
+            lw a2, 4(sp)                # a2 = depth
+            beq a0, zero, search_end    # if node->right == NULL -> search_end (not found)
+            jal ra, search              # right_depth = search(node->right, val, depth)
+            j search_end                # return right_depth
+
+        search_found:
+            mv a0, a2                   # a0 = depth
+
+        search_end:
+            lw ra, 12(sp)               # load ra
+            addi sp, sp, 16
+            ret                         # return depth
 
 puts: # void puts ( const char *str )
     addi sp, sp, -16

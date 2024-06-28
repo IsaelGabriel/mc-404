@@ -18,6 +18,6 @@ void _start(){
     node_7.val = -798; node_7.left = NULL; node_7.right = NULL;
 
     val = atoi(gets(buffer));
-    puts(itoa(val, buffer, 10));
+    puts(itoa(recursive_tree_search(&root_node, val), buffer, 10));
     exit(0);
 }
